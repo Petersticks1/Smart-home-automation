@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
 import faviconImage from '../../assets/favicon.png';
+import smartHomeVideo from '../../assets/smart-home.mp4';
+
+// Pre-fetch all scrubber frames via Vite's glob import
+const rawMorning = import.meta.glob('../../assets/ezgif-38fa852f1ff2fb3e-jpg/*.jpg', { eager: true, query: '?url', import: 'default' });
+const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.jpg', { eager: true, query: '?url', import: 'default' });
 
 export function Preloader() {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,7 +17,32 @@ export function Preloader() {
     // Ensure the animation is visible for at least 1.5 seconds so it doesn't flash abruptly
     const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Wait for all assets (images, videos, styles) on the page to finish loading
+    // Gather all frame URLs
+    const imageUrls = [
+      ...Object.values(rawMorning) as string[],
+      ...Object.values(rawAppliance) as string[]
+    ];
+
+    // Explicitly preload all scrubber images
+    const imagePromises = imageUrls.map(url => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve; // Resolve on error so a single broken frame doesn't block the site
+        img.src = url;
+      });
+    });
+
+    // Explicitly preload the hero background video
+    const videoPromise = new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.oncanplaythrough = resolve;
+      video.onerror = resolve;
+      video.src = smartHomeVideo;
+      video.load();
+    });
+    
+    // Wait for the main DOM and stylesheets
     const windowLoad = new Promise(resolve => {
       if (document.readyState === 'complete') {
         resolve(true);
@@ -22,8 +51,8 @@ export function Preloader() {
       }
     });
 
-    // When BOTH the minimum time has passed AND the window is fully loaded
-    Promise.all([minLoadTime, windowLoad]).then(() => {
+    // Wait for ALL conditions to be met: min time, DOM loaded, all frames loaded, and video ready
+    Promise.all([minLoadTime, windowLoad, videoPromise, ...imagePromises]).then(() => {
       setIsLoading(false);
       document.body.style.overflow = 'unset';
     });

@@ -11,8 +11,10 @@ import { Services } from './components/sections/Services';
 import { WhatsAppFAB } from './components/ui/WhatsAppFAB';
 import { ConsultationModal } from './components/ui/ConsultationModal';
 import { Preloader } from './components/ui/Preloader';
+import { useSmoothScroll } from './hooks/useSmoothScroll';
 
 function App() {
+  useSmoothScroll();
   const [consultationOpen, setConsultationOpen] = useState(false);
 
   return (

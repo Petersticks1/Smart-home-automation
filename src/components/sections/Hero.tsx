@@ -58,7 +58,7 @@ export function Hero({ onOpenConsultation }: { onOpenConsultation: () => void })
             {...getAnimation(0.3)}
             className="text-white/80 text-lg md:text-xl leading-relaxed mb-10 max-w-3xl drop-shadow-md mx-auto"
           >
-            We automate lighting, security, climate, access control, and energy management — building smarter Nigerian homes from Abeokuta to Lagos.
+            We automate lighting, security, climate, access control, and energy management — building smarter Nigerian homes.
           </motion.p>
           
           <motion.div 

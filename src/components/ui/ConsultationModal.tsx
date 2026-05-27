@@ -100,7 +100,7 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
             transition={{ type: 'spring', damping: 28, stiffness: 350 }}
             className="fixed inset-0 z-[1000] flex items-center justify-center p-4 pointer-events-none"
           >
-            <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto pointer-events-auto bg-[#0a0d14] border border-white/10 rounded-2xl shadow-[0_0_80px_rgba(37,99,235,0.15)] text-white">
+            <div data-lenis-prevent="true" className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto pointer-events-auto bg-[#0a0d14] border border-white/10 rounded-2xl shadow-[0_0_80px_rgba(37,99,235,0.15)] text-white">
 
               {/* Header */}
               <div className="sticky top-0 z-10 bg-[#0a0d14] border-b border-white/8 px-6 py-5 flex items-center justify-between">
