@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -159,7 +159,7 @@ export function FrameScrubber({ children }: { children?: React.ReactNode }) {
         {SCENES.map((scene, i) => (
           <div 
             key={i}
-            ref={el => captionRefs.current[i] = el}
+            ref={el => { captionRefs.current[i] = el; }}
             className="absolute flex flex-col items-center text-center opacity-0 will-change-transform"
           >
             <div className="text-amber-500 text-sm md:text-base tracking-[0.3em] uppercase font-semibold mb-4 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">

@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useActiveSection } from '../../hooks/useActiveSection';
-import { useTheme } from '../../hooks/useTheme';
 import logoImage from '../../assets/image.png';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme } = useTheme();
+
   const activeSection = useActiveSection(['home', 'services', 'projects', 'testimonials', 'about', 'contact']);
 
   useEffect(() => {

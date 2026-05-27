@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { Icon } from '@iconify/react';
 import { SectionWrapper } from '../shared/SectionWrapper';
 import { Button } from '../ui/Button';

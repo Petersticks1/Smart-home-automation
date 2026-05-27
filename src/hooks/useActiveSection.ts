@@ -4,7 +4,6 @@ export function useActiveSection(sectionIds: string[]) {
   const [activeSection, setActiveSection] = useState<string>('');
 
   useEffect(() => {
-    const observers = new Map<string, IntersectionObserver>();
 
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
