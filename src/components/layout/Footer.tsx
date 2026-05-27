@@ -124,7 +124,7 @@ export function Footer({ onOpenConsultation }: { onOpenConsultation: () => void 
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 pt-6 border-t border-white/8 flex flex-row items-center justify-center gap-2 text-xs text-gray-500 text-center">
+        <div className="mt-14 pt-6 border-t border-white/8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-2 text-xs text-gray-500 text-center">
           <p>© 2026 Smart Homes Automation. All rights reserved.</p>
           <p className="flex items-center gap-1.5">
             Built With

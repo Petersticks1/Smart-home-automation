@@ -10,12 +10,14 @@ import { Contact } from './components/sections/Contact';
 import { Services } from './components/sections/Services';
 import { WhatsAppFAB } from './components/ui/WhatsAppFAB';
 import { ConsultationModal } from './components/ui/ConsultationModal';
+import { Preloader } from './components/ui/Preloader';
 
 function App() {
   const [consultationOpen, setConsultationOpen] = useState(false);
 
   return (
     <>
+      <Preloader />
       <Navbar />
       <main>
         <Hero onOpenConsultation={() => setConsultationOpen(true)} />
