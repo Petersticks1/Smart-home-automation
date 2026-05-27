@@ -1,0 +1,58 @@
+export const projects = [
+  {
+    id: 1,
+    name: 'Residential CCTV Installation',
+    location: 'Aja, Lagos State',
+    description: '2-camera outdoor security system installed at a residential property in Aja, Lagos, providing full perimeter coverage and remote viewing.',
+    tags: ['Security', 'CCTV', 'Lagos'],
+    icons: ['ph:camera-bold', 'ph:shield-check-bold', 'ph:eye-bold'],
+    gradient: '#0066CC',
+  },
+  {
+    id: 2,
+    name: 'Home Security Setup',
+    location: 'Ibadan, Oyo State',
+    description: '2-camera CCTV system professionally installed at a residential home in Ibadan, covering key entry and exterior zones.',
+    tags: ['Security', 'CCTV', 'Oyo'],
+    icons: ['ph:camera-bold', 'ph:house-bold', 'ph:shield-check-bold'],
+    gradient: '#0066CC',
+  },
+  {
+    id: 3,
+    name: 'Obantoko Residential Security',
+    location: 'Obantoko, Abeokuta',
+    description: '2-camera surveillance system deployed at a residential property in Obantoko, Abeokuta for round-the-clock security monitoring.',
+    tags: ['Security', 'CCTV', 'Abeokuta'],
+    icons: ['ph:camera-bold', 'ph:map-pin-bold', 'ph:eye-bold'],
+    gradient: '#0066CC',
+  },
+  {
+    id: 4,
+    name: 'Camp Area Security System',
+    location: 'Camp, Abeokuta',
+    description: '4-camera comprehensive CCTV installation at a property in Camp, Abeokuta, offering wide-area coverage and enhanced perimeter security.',
+    tags: ['Security', 'CCTV', '4 Cameras'],
+    icons: ['ph:camera-bold', 'ph:shield-check-bold', 'ph:video-camera-bold'],
+    gradient: '#0066CC',
+  },
+  {
+    id: 5,
+    name: 'Single Lens Camera Installation',
+    location: 'Ake, Abeokuta',
+    description: 'Single high-resolution lens camera installed in Ake, Abeokuta, providing targeted surveillance at a critical entry point.',
+    tags: ['Security', 'CCTV', 'Abeokuta'],
+    icons: ['ph:camera-bold', 'ph:crosshair-bold', 'ph:shield-check-bold'],
+    gradient: '#0066CC',
+  },
+  {
+    id: 6,
+    name: 'Store Security System',
+    location: 'Ikeja, Lagos State',
+    description: '2-camera CCTV system professionally installed at a commercial property in Ikeja, Lagos, covering the main entrance and interior sales area.',
+    tags: ['Security', 'CCTV', '2 Cameras'],
+    icons: ['ph:camera-bold', 'ph:house-line-bold', 'ph:eye-bold'],
+    gradient: '#0066CC',
+  },
+];
+
+

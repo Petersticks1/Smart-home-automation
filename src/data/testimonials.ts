@@ -1,0 +1,51 @@
+export const testimonials = [
+  {
+    id: 1,
+    quote: 'The cameras were installed cleanly and quickly. I can now monitor my home from anywhere on my phone — total peace of mind.',
+    name: 'Mrs Adebayo',
+    title: 'Homeowner',
+    location: 'Aja, Lagos State',
+    rating: 5,
+  },
+  {
+    id: 2,
+    quote: 'Very professional team. They set everything up perfectly and made sure I understood how to use the system before they left. Highly recommend!',
+    name: 'Mr Ajayi',
+    title: 'Homeowner',
+    location: 'Ibadan, Oyo State',
+    rating: 5,
+  },
+  {
+    id: 3,
+    quote: 'Seamless installation at my property in Obantoko. The cameras have great picture quality and the setup was done in no time.',
+    name: 'Mr Oseni',
+    title: 'Property Owner',
+    location: 'Obantoko, Abeokuta',
+    rating: 5,
+  },
+  {
+    id: 4,
+    quote: 'Four cameras covering every angle. I feel completely secure knowing my compound is monitored around the clock. Excellent work!',
+    name: 'Engr. Jamiu',
+    title: 'Homeowner',
+    location: 'Camp, Abeokuta',
+    rating: 5,
+  },
+  {
+    id: 5,
+    quote: 'Great service from Altair Attic. The single camera they installed gives me exactly the view I needed. Clean job, fair price.',
+    name: 'Mr Kenny',
+    title: 'Homeowner',
+    location: 'Ake, Abeokuta',
+    rating: 5,
+  },
+  {
+    id: 6,
+    quote: 'Altair Attic did a great job. Very tidy installation, they explained everything clearly and the system has been working perfectly since day one.',
+    name: 'Mrs Bakare',
+    title: 'Store Owner',
+    location: 'Lagos',
+    rating: 5,
+  },
+];
+
