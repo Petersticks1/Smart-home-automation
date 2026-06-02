@@ -235,7 +235,7 @@ export function VideoScrubber({ id, frames, scenes, bgClassName = "bg-[#000B18]"
             className="absolute flex flex-col items-center text-center opacity-0 will-change-transform"
           >
             {scene.time && (
-              <div className="text-amber-500 text-sm md:text-base tracking-[0.3em] uppercase font-semibold mb-4 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+              <div className="text-amber-500 text-2xl md:text-4xl tracking-[0.3em] uppercase font-extrabold mb-4 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
                 {scene.time}
               </div>
             )}
