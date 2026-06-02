@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import faviconImage from '../../assets/favicon.png';
+import faviconImage from '../../assets/favicon.webp';
 import smartHomeVideo from '../../assets/smart-home.mp4';
 
 // Pre-fetch all scrubber frames via Vite's glob import
-const rawMorning = import.meta.glob('../../assets/ezgif-38fa852f1ff2fb3e-jpg/*.jpg', { eager: true, query: '?url', import: 'default' });
-const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.jpg', { eager: true, query: '?url', import: 'default' });
+const rawMorning = import.meta.glob('../../assets/ezgif-38fa852f1ff2fb3e-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
+const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
 
 export function Preloader() {
   const [isLoading, setIsLoading] = useState(true);

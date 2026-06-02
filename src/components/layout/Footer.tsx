@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import logoImage from '../../assets/image.png';
+import logoImage from '../../assets/image.webp';
 
 export function Footer({ onOpenConsultation }: { onOpenConsultation: () => void }) {
 

@@ -1,9 +1,9 @@
 import { VideoScrubber } from '../ui/VideoScrubber';
 
-const rawMorning = import.meta.glob('../../assets/ezgif-38fa852f1ff2fb3e-jpg/*.jpg', { eager: true, query: '?url', import: 'default' });
+const rawMorning = import.meta.glob('../../assets/ezgif-38fa852f1ff2fb3e-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
 const morningFramesMap = rawMorning as Record<string, string>;
 
-const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.jpg', { eager: true, query: '?url', import: 'default' });
+const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
 const applianceFramesMap = rawAppliance as Record<string, string>;
 
 const MORNING_SCENES = [
@@ -24,8 +24,8 @@ export function SmartHomeNarrative() {
   const getSortedUrls = (map: Record<string, string>) => {
     return Object.keys(map)
       .sort((a, b) => {
-        const numA = parseInt(a.match(/(\d+)\.jpg$/)?.[1] || "0", 10);
-        const numB = parseInt(b.match(/(\d+)\.jpg$/)?.[1] || "0", 10);
+        const numA = parseInt(a.match(/(\d+)\.webp$/)?.[1] || "0", 10);
+        const numB = parseInt(b.match(/(\d+)\.webp$/)?.[1] || "0", 10);
         return numA - numB;
       })
       .map(k => map[k]);

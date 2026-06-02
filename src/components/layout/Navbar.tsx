@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useActiveSection } from '../../hooks/useActiveSection';
-import logoImage from '../../assets/image.png';
+import logoImage from '../../assets/image.webp';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
