@@ -110,9 +110,7 @@ export function Services() {
                   {service.description}
                 </p>
 
-                <div className="mt-5 flex items-center gap-1 text-brand-primary text-sm font-medium opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                  Learn more <Icon icon="ph:arrow-right-bold" className="w-3.5 h-3.5" />
-                </div>
+
               </div>
             </motion.div>
           ))}

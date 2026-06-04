@@ -12,10 +12,10 @@ export function Preloader() {
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
-    
+
     // Ensure the animation is visible for at least 1.5 seconds
     const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     // Gather all frame URLs from the Narrative component (which is optimized)
     const imageUrls = ALL_NARRATIVE_FRAMES;
 
@@ -32,12 +32,12 @@ export function Preloader() {
     // Explicitly preload the hero background video
     const videoPromise = new Promise((resolve) => {
       const video = document.createElement('video');
-      video.oncanplaythrough = resolve; 
+      video.oncanplaythrough = resolve;
       video.onerror = resolve;
       video.src = smartHomeVideo;
       video.load();
     });
-    
+
     // Wait for the main DOM and stylesheets
     const windowLoad = new Promise(resolve => {
       if (document.readyState === 'complete') {
@@ -123,10 +123,10 @@ export function Preloader() {
               }}
               className="relative z-10 w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center backdrop-blur-sm"
             >
-              <img 
-                src={faviconImage} 
-                alt="Altair Attic" 
-                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(0,102,204,0.8)]" 
+              <img
+                src={faviconImage}
+                alt="Altair Attic"
+                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(0,102,204,0.8)]"
               />
             </motion.div>
           </div>
