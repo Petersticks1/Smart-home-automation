@@ -10,12 +10,14 @@ import { Contact } from './components/sections/Contact';
 import { Services } from './components/sections/Services';
 import { WhatsAppFAB } from './components/ui/WhatsAppFAB';
 import { ConsultationModal } from './components/ui/ConsultationModal';
+import { SalesFunnelModal } from './components/ui/SalesFunnelModal';
 import { Preloader } from './components/ui/Preloader';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 
 function App() {
   useSmoothScroll();
   const [consultationOpen, setConsultationOpen] = useState(false);
+  const [funnelModalOpen, setFunnelModalOpen] = useState(false);
 
   return (
     <>
@@ -24,7 +26,7 @@ function App() {
       <main>
         <Hero onOpenConsultation={() => setConsultationOpen(true)} />
         <SmartHomeNarrative />
-        <Services />
+        <Services onOpenFunnelModal={() => setFunnelModalOpen(true)} />
         <Projects />
         <Testimonials />
         <About />
@@ -34,6 +36,7 @@ function App() {
       <WhatsAppFAB />
       {/* Single global modal — avoids stacking context issues from GSAP pins */}
       <ConsultationModal isOpen={consultationOpen} onClose={() => setConsultationOpen(false)} />
+      <SalesFunnelModal isOpen={funnelModalOpen} onClose={() => setFunnelModalOpen(false)} />
     </>
   );
 }

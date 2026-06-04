@@ -57,7 +57,7 @@ const cardVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
 };
 
-export function Services() {
+export function Services({ onOpenFunnelModal }: { onOpenFunnelModal?: () => void }) {
   return (
     <SectionWrapper id="services" className="py-24 bg-white dark:bg-surface-dark-2 relative overflow-hidden">
 
@@ -124,13 +124,16 @@ export function Services() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-14 text-center"
         >
-          <a
-            href="#contact"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              if (onOpenFunnelModal) onOpenFunnelModal();
+            }}
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-brand-primary hover:bg-brand-hover text-white font-semibold text-sm transition-colors shadow-[0_0_25px_rgba(0,102,204,0.3)]"
           >
-            Get a Custom Quote
+            Explore Smart Solutions
             <Icon icon="ph:arrow-right-bold" className="w-4 h-4" />
-          </a>
+          </button>
         </motion.div>
       </div>
     </SectionWrapper>
