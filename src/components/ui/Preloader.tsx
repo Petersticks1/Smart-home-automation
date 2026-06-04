@@ -23,8 +23,15 @@ export function Preloader() {
       ...Object.values(rawAppliance) as string[]
     ];
 
-    // Explicitly preload all scrubber images
-    const imagePromises = imageUrls.map(url => {
+    // Only block the preloader on the FIRST frame of each sequence
+    // to ensure something is visible immediately.
+    const criticalImages = [
+      (Object.values(rawMorning) as string[])[0],
+      (Object.values(rawAppliance) as string[])[0],
+    ].filter(Boolean);
+
+    // Explicitly preload critical images
+    const imagePromises = criticalImages.map(url => {
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = resolve;
@@ -33,10 +40,10 @@ export function Preloader() {
       });
     });
 
-    // Explicitly preload the hero background video
+    // Explicitly preload the hero background video (wait for first frame data)
     const videoPromise = new Promise((resolve) => {
       const video = document.createElement('video');
-      video.oncanplaythrough = resolve;
+      video.onloadeddata = resolve; // Faster than oncanplaythrough
       video.onerror = resolve;
       video.src = smartHomeVideo;
       video.load();
@@ -51,10 +58,18 @@ export function Preloader() {
       }
     });
 
-    // Wait for ALL conditions to be met: min time, DOM loaded, all frames loaded, and video ready
+    // Wait for ALL conditions to be met: min time, DOM loaded, first frames loaded, and video ready
     Promise.all([minLoadTime, windowLoad, videoPromise, ...imagePromises]).then(() => {
       setIsLoading(false);
       document.body.style.overflow = 'unset';
+
+      // Lazy preload the rest in the background
+      setTimeout(() => {
+        imageUrls.forEach(url => {
+          const img = new Image();
+          img.src = url;
+        });
+      }, 1000);
     });
 
     return () => {
