@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import faviconImage from '../../assets/favicon.webp';
 import smartHomeVideo from '../../assets/smart-home.mp4';
-
-// Pre-fetch all scrubber frames via Vite's glob import
-const rawMorning = import.meta.glob('../../assets/ezgif-38fa852f1ff2fb3e-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
-const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
+import { ALL_NARRATIVE_FRAMES } from '../sections/SmartHomeNarrative';
 
 export function Preloader() {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,50 +16,38 @@ export function Preloader() {
     // Ensure the animation is visible for at least 1.5 seconds
     const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Gather all frame URLs
-    const imageUrls = [
-      ...Object.values(rawMorning) as string[],
-      ...Object.values(rawAppliance) as string[]
-    ];
+    // Gather all frame URLs from the Narrative component (which is optimized)
+    const imageUrls = ALL_NARRATIVE_FRAMES;
 
-    // Only block the preloader on the FIRST frame of each sequence
-    const criticalImages = [
-      (Object.values(rawMorning) as string[])[0],
-      (Object.values(rawAppliance) as string[])[0],
-    ].filter(Boolean);
-
-    // Explicitly preload critical images, with a 2-second timeout fallback
-    const imagePromises = criticalImages.map(url => {
-      const loadPromise = new Promise((resolve) => {
+    // Explicitly preload all scrubber images to prevent stiffness on first scroll
+    const imagePromises = imageUrls.map(url => {
+      return new Promise((resolve) => {
         const img = new Image();
-        img.onload = resolve;
-        img.onerror = resolve;
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(true);
         img.src = url;
       });
-      return Promise.race([loadPromise, new Promise(res => setTimeout(res, 2000))]);
     });
 
-    // Explicitly preload the hero background video (wait for first frame data), with a 3-second timeout fallback
-    const loadVideoPromise = new Promise((resolve) => {
+    // Explicitly preload the hero background video
+    const videoPromise = new Promise((resolve) => {
       const video = document.createElement('video');
-      video.onloadeddata = resolve; // Faster than oncanplaythrough
+      video.oncanplaythrough = resolve; 
       video.onerror = resolve;
       video.src = smartHomeVideo;
       video.load();
     });
-    const videoPromise = Promise.race([loadVideoPromise, new Promise(res => setTimeout(res, 3000))]);
     
-    // Wait for the main DOM and stylesheets, with a 3-second timeout fallback
-    const loadWindowPromise = new Promise(resolve => {
+    // Wait for the main DOM and stylesheets
+    const windowLoad = new Promise(resolve => {
       if (document.readyState === 'complete') {
         resolve(true);
       } else {
         window.addEventListener('load', resolve);
       }
     });
-    const windowLoad = Promise.race([loadWindowPromise, new Promise(res => setTimeout(res, 3000))]);
 
-    // Wait for ALL conditions to be met: min time, DOM loaded, first frames loaded, and video ready
+    // Wait for ALL conditions to be met: min time, DOM loaded, all frames loaded, and video ready
     Promise.all([minLoadTime, windowLoad, videoPromise, ...imagePromises]).then(() => {
       setIsLoading(false);
       document.documentElement.style.overflow = '';

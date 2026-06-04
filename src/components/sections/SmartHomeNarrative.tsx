@@ -6,6 +6,22 @@ const morningFramesMap = rawMorning as Record<string, string>;
 const rawAppliance = import.meta.glob('../../assets/ezgif-1354f6978a4e68c0-jpg/*.webp', { eager: true, query: '?url', import: 'default' });
 const applianceFramesMap = rawAppliance as Record<string, string>;
 
+export const getSortedUrls = (map: Record<string, string>) => {
+  return Object.keys(map)
+    .sort((a, b) => {
+      const numA = parseInt(a.match(/(\d+)\.webp$/)?.[1] || "0", 10);
+      const numB = parseInt(b.match(/(\d+)\.webp$/)?.[1] || "0", 10);
+      return numA - numB;
+    })
+    .map(k => map[k])
+    // Skip every other frame to instantly double loading speed while maintaining a smooth enough framerate
+    .filter((_, i) => i % 2 === 0);
+};
+
+export const morningFrames = getSortedUrls(morningFramesMap);
+export const applianceFrames = getSortedUrls(applianceFramesMap);
+export const ALL_NARRATIVE_FRAMES = [...morningFrames, ...applianceFrames];
+
 const MORNING_SCENES = [
   { time: "07:00 AM", text: "" },
   { time: "07:01 AM", text: "" },
@@ -21,21 +37,7 @@ const APPLIANCE_SCENES = [
 ];
 
 export function SmartHomeNarrative() {
-  const getSortedUrls = (map: Record<string, string>) => {
-    return Object.keys(map)
-      .sort((a, b) => {
-        const numA = parseInt(a.match(/(\d+)\.webp$/)?.[1] || "0", 10);
-        const numB = parseInt(b.match(/(\d+)\.webp$/)?.[1] || "0", 10);
-        return numA - numB;
-      })
-      .map(k => map[k]);
-  };
-
-  const morningFrames = getSortedUrls(morningFramesMap);
-  const combinedFrames = [
-    ...morningFrames,
-    ...getSortedUrls(applianceFramesMap)
-  ];
+  const combinedFrames = ALL_NARRATIVE_FRAMES;
 
   const combinedScenes = [...MORNING_SCENES, ...APPLIANCE_SCENES];
 
