@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
@@ -20,153 +18,139 @@ interface VideoScrubberProps {
   transitionIndex?: number;
 }
 
-function Scene({ frameIndex, frameUrls, transitionIndex = 99999 }: { frameIndex: { current: number }, frameUrls: string[], transitionIndex: number }) {
-  const meshA = useRef<THREE.Mesh>(null);
-  const materialA = useRef<THREE.MeshBasicMaterial>(null);
-  const meshB = useRef<THREE.Mesh>(null);
-  const materialB = useRef<THREE.MeshBasicMaterial>(null);
-  const { viewport } = useThree();
-  const loader = useRef(new THREE.TextureLoader());
-
-  useEffect(() => {
-    const cacheKey = `_textureCache_${encodeURIComponent(frameUrls[0] || 'default')}`;
-    
-    (window as any)[`getScrubTexture_${cacheKey}`] = (index: number) => {
-      const cache = (window as any)[cacheKey] || {};
-      if (!(window as any)[cacheKey]) (window as any)[cacheKey] = cache;
-      if (cache[index]) return cache[index];
-      
-      const url = frameUrls[index];
-      if (!url) return null;
-
-      const texture = loader.current.load(
-        url, 
-        (tex) => {
-          tex.colorSpace = THREE.SRGBColorSpace;
-          tex.generateMipmaps = false; 
-          tex.minFilter = THREE.LinearFilter;
-        },
-        undefined,
-        () => {} 
-      );
-      
-      cache[index] = texture;
-      return texture;
-    };
-    
-    return () => {
-      const cache = (window as any)[cacheKey] || {};
-      Object.values(cache).forEach((t: any) => t.dispose && t.dispose());
-      (window as any)[cacheKey] = {};
-    }
-  }, [frameUrls]);
-
-  useFrame(() => {
-    const cacheKey = `_textureCache_${encodeURIComponent(frameUrls[0] || 'default')}`;
-    const getTexture = (index: number) => (window as any)[`getScrubTexture_${cacheKey}`]?.(index);
-
-    const idx = Math.floor(frameIndex.current);
-    const TRANSITION_FRAMES = 20; // 20 frames of glowing crossfade
-
-    let aIdx = idx;
-    if (aIdx >= transitionIndex) aIdx = transitionIndex - 1; // Freeze A on its last frame
-    
-    let bIdx = idx;
-    if (bIdx < transitionIndex) bIdx = transitionIndex; // Freeze B on its first frame
-    
-    const texA = getTexture(aIdx);
-    const texB = getTexture(bIdx);
-
-    const applyScale = (mesh: THREE.Mesh, texture: THREE.Texture) => {
-      const img = texture.image as HTMLImageElement;
-      const imgAspect = img.width / img.height;
-      const viewportAspect = viewport.width / viewport.height;
-      let scaleX = viewport.width;
-      let scaleY = viewport.height;
-      
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
-        if (imgAspect > 2.0) {
-          scaleY = viewport.width / (16/9);
-          scaleX = scaleY * imgAspect;
-        } else {
-          if (viewportAspect > imgAspect) {
-            scaleY = viewport.height;
-            scaleX = viewport.height * imgAspect;
-          } else {
-            scaleX = viewport.width;
-            scaleY = viewport.width / imgAspect;
-          }
-        }
-      } else {
-        if (viewportAspect > imgAspect) {
-          scaleY = viewport.height;
-          scaleX = viewport.height * imgAspect;
-        } else {
-          scaleX = viewport.width;
-          scaleY = viewport.width / imgAspect;
-        }
-      }
-      mesh.scale.set(scaleX, scaleY, 1);
-    };
-
-    if (materialA.current && texA?.image && meshA.current) {
-      materialA.current.map = texA;
-      materialA.current.needsUpdate = true;
-      applyScale(meshA.current, texA);
-      
-      if (idx < transitionIndex) {
-        materialA.current.opacity = 1.0;
-      } else {
-        const progress = (idx - transitionIndex) / TRANSITION_FRAMES;
-        materialA.current.opacity = Math.max(0, 1.0 - progress);
-      }
-    }
-
-    if (materialB.current && texB?.image && meshB.current) {
-      materialB.current.map = texB;
-      materialB.current.needsUpdate = true;
-      applyScale(meshB.current, texB);
-      
-      if (idx >= transitionIndex) {
-        materialB.current.opacity = 1.0;
-        materialB.current.blending = THREE.NormalBlending;
-      } else if (idx >= transitionIndex - TRANSITION_FRAMES) {
-        const progress = (idx - (transitionIndex - TRANSITION_FRAMES)) / TRANSITION_FRAMES;
-        materialB.current.opacity = progress;
-        // Creates a cinematic "glow" effect as it fades in over A
-        materialB.current.blending = THREE.AdditiveBlending; 
-      } else {
-        materialB.current.opacity = 0.0;
-      }
-    }
-  });
-
-  return (
-    <group>
-      <mesh ref={meshA} position={[0, 0, 0]}>
-        <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial ref={materialA} color="#ffffff" transparent opacity={1} />
-      </mesh>
-      <mesh ref={meshB} position={[0, 0, 0.01]}>
-        <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial ref={materialB} color="#ffffff" transparent opacity={0} />
-      </mesh>
-    </group>
-  );
-}
-
 export function VideoScrubber({ id, frames, scenes, bgClassName = "bg-[#000B18]", transitionIndex = 99999 }: VideoScrubberProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const frameIndex = useRef(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const frameIndex = useRef({ current: 0 });
   const captionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const TOTAL_FRAMES = frames.length;
 
   useEffect(() => {
-    if (!containerRef.current || TOTAL_FRAMES === 0) return;
+    if (!containerRef.current || !canvasRef.current || TOTAL_FRAMES === 0) return;
+    
+    // Preload image objects (synchronous access for canvas)
+    const imageCache: Record<number, HTMLImageElement> = {};
+    const getImage = (index: number) => {
+      if (imageCache[index]) return imageCache[index];
+      if (!frames[index]) return null;
+      const img = new Image();
+      img.src = frames[index];
+      imageCache[index] = img;
+      return img;
+    };
+    
+    // Load at least the first frame so we can render it immediately
+    const firstImg = getImage(0);
+    if (firstImg) {
+      firstImg.onload = () => renderFrame(0);
+    }
+    
+    const ctx = canvasRef.current.getContext('2d');
+    
+    const renderFrame = (idx: number) => {
+      if (!ctx || !canvasRef.current) return;
+      const canvas = canvasRef.current;
+      
+      const TRANSITION_FRAMES = 20;
 
-    const ctx = gsap.context(() => {
+      let aIdx = idx;
+      if (aIdx >= transitionIndex) aIdx = transitionIndex - 1; 
+      let bIdx = idx;
+      if (bIdx < transitionIndex) bIdx = transitionIndex;
+
+      const imgA = getImage(aIdx);
+      const imgB = getImage(bIdx);
+
+      const drawScaled = (img: HTMLImageElement, alpha: number, blendMode: GlobalCompositeOperation) => {
+        if (!img.complete || img.naturalWidth === 0) return;
+        
+        ctx.globalAlpha = alpha;
+        ctx.globalCompositeOperation = blendMode;
+        
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const canvasAspect = canvas.width / canvas.height;
+        let drawW = canvas.width;
+        let drawH = canvas.height;
+        
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          if (imgAspect > 2.0) {
+            drawH = canvas.width / (16/9);
+            drawW = drawH * imgAspect;
+          } else {
+            if (canvasAspect > imgAspect) {
+              drawH = canvas.height;
+              drawW = canvas.height * imgAspect;
+            } else {
+              drawW = canvas.width;
+              drawH = canvas.width / imgAspect;
+            }
+          }
+        } else {
+          if (canvasAspect > imgAspect) {
+            drawH = canvas.height;
+            drawW = canvas.height * imgAspect;
+          } else {
+            drawW = canvas.width;
+            drawH = canvas.width / imgAspect;
+          }
+        }
+        
+        const x = (canvas.width - drawW) / 2;
+        const y = (canvas.height - drawH) / 2;
+        
+        ctx.drawImage(img, x, y, drawW, drawH);
+      };
+
+      // Clear canvas
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1.0;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Render A
+      if (imgA) {
+        let opacityA = 1.0;
+        if (idx >= transitionIndex) {
+          const progress = (idx - transitionIndex) / TRANSITION_FRAMES;
+          opacityA = Math.max(0, 1.0 - progress);
+        }
+        if (opacityA > 0) drawScaled(imgA, opacityA, 'source-over');
+      }
+
+      // Render B
+      if (imgB) {
+        let opacityB = 0.0;
+        let blend: GlobalCompositeOperation = 'source-over';
+        
+        if (idx >= transitionIndex) {
+          opacityB = 1.0;
+        } else if (idx >= transitionIndex - TRANSITION_FRAMES) {
+          const progress = (idx - (transitionIndex - TRANSITION_FRAMES)) / TRANSITION_FRAMES;
+          opacityB = progress;
+          blend = 'lighter'; // Additive Blending equivalent
+        }
+        
+        if (opacityB > 0) drawScaled(imgB, opacityB, blend);
+      }
+    };
+
+    const handleResize = () => {
+      if (canvasRef.current) {
+        // High DPI support
+        const dpr = window.devicePixelRatio || 1;
+        canvasRef.current.width = window.innerWidth * dpr;
+        canvasRef.current.height = window.innerHeight * dpr;
+        canvasRef.current.style.width = `${window.innerWidth}px`;
+        canvasRef.current.style.height = `${window.innerHeight}px`;
+        renderFrame(Math.floor(frameIndex.current.current));
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    const gsapCtx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -174,10 +158,13 @@ export function VideoScrubber({ id, frames, scenes, bgClassName = "bg-[#000B18]"
           end: `+=${scenes.length * 100}%`,
           scrub: 1,
           pin: true,
+          onUpdate: () => {
+             renderFrame(Math.floor(frameIndex.current.current));
+          }
         }
       });
 
-      tl.to(frameIndex, {
+      tl.to(frameIndex.current, {
         current: TOTAL_FRAMES - 1,
         ease: 'none',
         duration: 100
@@ -203,8 +190,11 @@ export function VideoScrubber({ id, frames, scenes, bgClassName = "bg-[#000B18]"
 
     }, containerRef);
 
-    return () => ctx.revert();
-  }, [TOTAL_FRAMES, scenes.length]);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      gsapCtx.revert();
+    };
+  }, [TOTAL_FRAMES, scenes.length, frames, transitionIndex]);
 
   if (TOTAL_FRAMES === 0) return null;
 
@@ -217,13 +207,10 @@ export function VideoScrubber({ id, frames, scenes, bgClassName = "bg-[#000B18]"
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5, ease: 'easeOut' }}
     >
-      <Canvas 
-        className="w-full h-full absolute top-0 left-0" 
-        camera={{ position: [0, 0, 5], fov: 50 }}
-        gl={{ antialias: false }} 
-      >
-        <Scene frameIndex={frameIndex} frameUrls={frames} transitionIndex={transitionIndex} />
-      </Canvas>
+      <canvas 
+        ref={canvasRef}
+        className="absolute top-0 left-0 w-full h-full object-cover" 
+      />
 
       <div className="absolute inset-0 pointer-events-none z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#000B18]/30 to-[#000B18]/90" />
       
