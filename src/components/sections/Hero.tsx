@@ -63,10 +63,10 @@ export function Hero({ onOpenConsultation }: { onOpenConsultation: () => void })
           
           <motion.div 
             {...getAnimation(0.4)}
-            className="flex flex-wrap gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-lg mx-auto"
           >
-            <Button variant="primary" onClick={onOpenConsultation} className="shadow-[0_0_20px_rgba(0,102,204,0.3)]">Get a Free Consultation</Button>
-            <a href="#projects"><Button variant="outline" className="border-white/50 text-white hover:bg-white/10">See Our Projects</Button></a>
+            <Button variant="primary" onClick={onOpenConsultation} className="w-full sm:w-[260px] shadow-[0_0_20px_rgba(0,102,204,0.3)]">Get a Free Consultation</Button>
+            <a href="#projects" className="w-full sm:w-[260px] block"><Button variant="outline" className="w-full border-white/50 text-white hover:bg-white/10">See Our Projects</Button></a>
           </motion.div>
 
           <motion.div 
