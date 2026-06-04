@@ -31,19 +31,33 @@ export function VideoScrubber({ id, frames, scenes, bgClassName = "bg-[#000B18]"
     
     // Preload image objects (synchronous access for canvas)
     const imageCache: Record<number, HTMLImageElement> = {};
-    const getImage = (index: number) => {
-      if (imageCache[index]) return imageCache[index];
-      if (!frames[index]) return null;
+    
+    // Eagerly instantiate all images so they are ready before the user scrolls
+    frames.forEach((url, index) => {
       const img = new Image();
-      img.src = frames[index];
+      img.onload = () => {
+        // If this image finishes decoding while we are currently scrubbing to it, force a render
+        if (Math.floor(frameIndex.current.current) === index) {
+          renderFrame(index);
+        }
+      };
+      img.src = url;
       imageCache[index] = img;
-      return img;
+    });
+
+    const getImage = (index: number) => {
+      return imageCache[index] || null;
     };
     
-    // Load at least the first frame so we can render it immediately
-    const firstImg = getImage(0);
+    // Wait for at least the first frame so we can render it immediately
+    const firstImg = imageCache[0];
     if (firstImg) {
-      firstImg.onload = () => renderFrame(0);
+      if (firstImg.complete) {
+        // Wrap in setTimeout to ensure ctx is available
+        setTimeout(() => renderFrame(0), 0);
+      } else {
+        firstImg.addEventListener('load', () => renderFrame(0));
+      }
     }
     
     const ctx = canvasRef.current.getContext('2d');
